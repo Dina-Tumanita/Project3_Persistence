@@ -71,12 +71,36 @@ INNER JOIN player ON player.playerid = worstHMplayers
 WHERE ROWNUM <= 3 
 
 -- Jugador de TTT con menos tiros para ganar
+SELECT player.name, MIN(maxturns) AS leastturns
+FROM (SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS maxturns
+    FROM turnttt
+    INNER JOIN tictactoeboard ON turnttt.tttid = tictactoeboard.tttid 
+    GROUP BY turnttt.tttid), turnttt
+INNER JOIN player ON player.playerid = turnttt.winner 
+GROUP BY player.playerid
+WHERE maxturns = leastturns
 
 -- Jugador de Hangman con menos intentos al ganar
+SELECT turnhm.hmid, MAX (hangmanboard.hmboardid) AS maxturns
+    FROM turnhm
+    INNER JOIN hangmanboard ON turnhm.hmid = hangmanboard.hmid 
+    GROUP BY turnhm.hmid
+ORDER BY maxturns ASC
 
 -- Jugador de TTT con más tiros para ganar
+SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS maxturns
+    FROM turnttt
+    INNER JOIN tictactoeboard ON turnttt.tttid = tictactoeboard.tttid 
+    GROUP BY turnttt.tttid
+ORDER BY maxturns DESC
 
 -- Jugador de Hangman con más intentos para ganar
+SELECT turnhm.hmid, MAX (hangmanboard.hmboardid) AS maxturns
+    FROM turnhm
+    INNER JOIN hangmanboard ON turnhm.hmid = hangmanboard.hmid 
+    GROUP BY turnhm.hmid
+ORDER BY maxturns DESC
+
 
 -- Promedio de tiros en TTT para ganar una partida ( partidas empatadas y en progreso no cuentan)
 
