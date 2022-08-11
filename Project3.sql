@@ -127,10 +127,18 @@ FROM(SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS maxturns
     GROUP BY turnttt.tttid
     ORDER BY maxturns DESC)
 
+-- Promedio del tamaño de palabras utilizadas en Hangman
+SELECT  ROUND(AVG( VSIZE (secretword) ), 2) averagewordsize 
+FROM hangmanword;
+
 -- Mostrar Listado de los jugadores de Hangman y establecer si son mejores como guiver o guesser
 SELECT * 
-FROM hangmanword;
+FROM (SELECT playerid, COL FROM hangman
+    UNPIVOT (playerid FOR COL IN (giverid, guesserid)))
+    PIVOT(COUNT(*) for (col) in ('GIVERID' playedasgiver, 'GUESSERID' playedasguesser))
 
 -- Mostrar listado de los jugadores de TTT y mostrar si son mejores con las X o las O
 SELECT * 
-FROM tictactoe;
+FROM (SELECT playerid, COL FROM tictactoe
+    UNPIVOT (playerid FOR COL IN (playerxid, playeroid)))
+    PIVOT(COUNT(*) for (col) in ('PLAYERXID' playedasx, 'PLAYEROID' playedaso))
