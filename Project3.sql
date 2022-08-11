@@ -71,35 +71,52 @@ INNER JOIN player ON player.playerid = worstHMplayers
 WHERE ROWNUM <= 3 
 
 -- Jugador de TTT con menos tiros para ganar
-SELECT player.name, MIN(maxturns) AS leastturns
-FROM (SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS maxturns
+SELECT player.playerid, player.name, leastamountofturns
+FROM (SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS leastamountofturns, turnttt.winner
     FROM turnttt
     INNER JOIN tictactoeboard ON turnttt.tttid = tictactoeboard.tttid 
-    GROUP BY turnttt.tttid), turnttt
-INNER JOIN player ON player.playerid = turnttt.winner 
-GROUP BY player.playerid
-WHERE maxturns = leastturns
+    WHERE turnttt.winner > 0 
+    GROUP BY turnttt.tttid, turnttt.winner
+    ORDER BY leastamountofturns ASC)
+INNER JOIN player ON player.playerid = winner
+WHERE ROWNUM <= 1
+GROUP BY player.playerid, player.name, leastamountofturns
 
 -- Jugador de Hangman con menos intentos al ganar
-SELECT turnhm.hmid, MAX (hangmanboard.hmboardid) AS maxturns
+SELECT player.playerid, player.name, leastamountofturns
+FROM (SELECT turnhm.hmid, MAX (hangmanboard.hmboardid) AS leastamountofturns, turnhm.winner
     FROM turnhm
     INNER JOIN hangmanboard ON turnhm.hmid = hangmanboard.hmid 
-    GROUP BY turnhm.hmid
-ORDER BY maxturns ASC
+    WHERE turnhm.winner > 0 
+    GROUP BY turnhm.hmid, turnhm.winner
+    ORDER BY leastamountofturns ASC)
+INNER JOIN player ON player.playerid = winner
+WHERE ROWNUM <= 1
+GROUP BY player.playerid, player.name, leastamountofturns
 
 -- Jugador de TTT con más tiros para ganar
-SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS maxturns
+SELECT player.playerid, player.name, mostamountofturns
+FROM (SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS mostamountofturns, turnttt.winner
     FROM turnttt
     INNER JOIN tictactoeboard ON turnttt.tttid = tictactoeboard.tttid 
-    GROUP BY turnttt.tttid
-ORDER BY maxturns DESC
+    WHERE turnttt.winner > 0 
+    GROUP BY turnttt.tttid, turnttt.winner
+    ORDER BY mostamountofturns DESC)
+INNER JOIN player ON player.playerid = winner
+WHERE ROWNUM <= 1
+GROUP BY player.playerid, player.name, mostamountofturns
 
 -- Jugador de Hangman con más intentos para ganar
-SELECT turnhm.hmid, MAX (hangmanboard.hmboardid) AS maxturns
+SELECT player.playerid, player.name, mostamountofturns
+FROM (SELECT turnhm.hmid, MAX (hangmanboard.hmboardid) AS mostamountofturns, turnhm.winner
     FROM turnhm
     INNER JOIN hangmanboard ON turnhm.hmid = hangmanboard.hmid 
-    GROUP BY turnhm.hmid
-ORDER BY maxturns DESC
+    WHERE turnhm.winner > 0 
+    GROUP BY turnhm.hmid, turnhm.winner
+    ORDER BY mostamountofturns DESC)
+INNER JOIN player ON player.playerid = winner
+WHERE ROWNUM <= 1
+GROUP BY player.playerid, player.name, mostamountofturns
 
 
 -- Promedio de tiros en TTT para ganar una partida ( partidas empatadas y en progreso no cuentan)
