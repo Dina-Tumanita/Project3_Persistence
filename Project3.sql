@@ -118,14 +118,18 @@ INNER JOIN player ON player.playerid = winner
 WHERE ROWNUM <= 1
 GROUP BY player.playerid, player.name, mostamountofturns
 
-
 -- Promedio de tiros en TTT para ganar una partida ( partidas empatadas y en progreso no cuentan)
-
--- Promedio del tamaño de palabras utilizadas en Hangman
+SELECT ROUND(AVG( maxturns ), 2)/2 averagethrows
+FROM(SELECT turnttt.tttid, MAX (tictactoeboard.tttboardid) AS maxturns
+    FROM turnttt
+    INNER JOIN tictactoeboard ON turnttt.tttid = tictactoeboard.tttid
+    WHERE turnttt.finished != 0 AND turnttt.winner != 0
+    GROUP BY turnttt.tttid
+    ORDER BY maxturns DESC)
 
 -- Mostrar Listado de los jugadores de Hangman y establecer si son mejores como guiver o guesser
 SELECT * 
-FROM hangman;
+FROM hangmanword;
 
 -- Mostrar listado de los jugadores de TTT y mostrar si son mejores con las X o las O
 SELECT * 
